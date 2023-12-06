@@ -10,6 +10,7 @@ namespace Project_GIS_Login.Repository.Abstract
 
         void Excluir(T entidade);
 
+
         IQueryable<T> Consulta { get; }
     }
 }

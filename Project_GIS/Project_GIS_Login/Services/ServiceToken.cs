@@ -43,12 +43,12 @@ namespace Project_GIS_Login.Services
             var claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, "Manager")
+                new Claim(ClaimTypes.Role, user.Role)
             };
 
             var tokenOptions = new JwtSecurityToken(
-                issuer: "http://localhost:5130",
-                audience: "http://localhost:5130",
+                issuer: "https://localhost:5130",
+                audience: "https://localhost:5130",
                 claims: claims,
                 expires: DateTime.Now.AddMinutes(5),
                 signingCredentials: signingCredentials

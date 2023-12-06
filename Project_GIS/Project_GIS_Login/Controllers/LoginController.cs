@@ -24,8 +24,8 @@ namespace Project_GIS_Login.Controllers
         }
 
         [HttpPost]
-        [Route("login")]
-        public async Task<ActionResult<dynamic>> AuthenticateAsync([FromBody] User model)
+        //[Route("login")]
+        public async Task<ActionResult<dynamic>> AuthenticateAsync([FromBody] UserVM userVm)
         {
 
             var user = new UserVM();
@@ -35,7 +35,7 @@ namespace Project_GIS_Login.Controllers
                         on u.id equals c.idUser
                         join r in _loginContext.Roles
                                     on c.idRole equals r.id
-                        where u.Username == model.Username && u.Password == model.Password
+                        where u.Username == userVm.Username && u.Password == userVm.Password
                         select new UserVM()
                         {
                             Username = u.Username,

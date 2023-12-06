@@ -16,12 +16,24 @@ namespace Project_GIS_Login.Repository.Concrect
 
         public void Inserir(T entidade)
         {
-            entidade.id = Guid.NewGuid();
-            entidade.DataInclusao = DateTime.Now;
-            entidade.DataExclusao = DateTime.MaxValue;
+            try
+            {
+                entidade.id = Guid.NewGuid();
+                entidade.DataInclusao = DateTime.Now;
+                entidade.DataExclusao = DateTime.MaxValue;
+                entidade.UsuarioInclusao = "teste";
+                entidade.UsuarioExclusao = "nulo";
 
-            _loginContext.Entry(entidade).State = EntityState.Added;
-            _loginContext.SaveChanges();
+
+                _loginContext.Entry(entidade).State = EntityState.Added;
+                _loginContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+
+                Console.WriteLine($"The file was not found: '{e}'");
+            }
+           
 
 
 
@@ -49,6 +61,8 @@ namespace Project_GIS_Login.Repository.Concrect
             _loginContext.Entry(entidade).State = EntityState.Deleted;
             _loginContext.SaveChanges();
         }
+
+
 
 
     }

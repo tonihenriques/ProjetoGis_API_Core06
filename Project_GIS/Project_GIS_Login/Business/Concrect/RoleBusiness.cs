@@ -15,6 +15,11 @@ namespace Project_GIS_Login.Business.Concrect
             base.Inserir(entidade);
         }
 
+        public override void Excluir(Role entidade)
+        {
+            base.Excluir(entidade);
+        }
+
 
     }
 }

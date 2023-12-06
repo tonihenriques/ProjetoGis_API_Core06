@@ -11,6 +11,7 @@ namespace Project_GIS_Login.Business.Abstract
             void Alterar(T entidade);
 
             void Excluir(T entidade);
+           
 
             IQueryable<T> Consulta { get; }
         }
