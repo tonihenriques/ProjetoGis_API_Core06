@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\Hunger_Map.props" />
+</Project>

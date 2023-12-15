@@ -5,6 +5,8 @@ using Project_GIS_Login.Business.Abstract;
 using Project_GIS_Login.Business.Concrect;
 using Project_GIS_Login.Entidade;
 using Project_GIS_Login.ViewModels;
+using Project_GIS_Login.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Project_GIS_Login.Controllers
 {
@@ -27,6 +29,7 @@ namespace Project_GIS_Login.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IEnumerable<dynamic>> FindAll()
         {
             try
@@ -55,8 +58,11 @@ namespace Project_GIS_Login.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<User>> Inserir([FromBody] UserVM modelVm)
         {
+
+            var senha = Encrypt.CreateHashFromPassword(modelVm.Password);
 
             if (ModelState.IsValid)
             {
@@ -64,7 +70,7 @@ namespace Project_GIS_Login.Controllers
                 {
                     id = Guid.Empty,
                     Username = modelVm.Username,
-                    Password = modelVm.Password,
+                    Password =   senha,
                     PhoneNumber = modelVm.PhoneNumber,
                     email = modelVm.email
 
@@ -104,6 +110,7 @@ namespace Project_GIS_Login.Controllers
 
         [HttpDelete("{id}")]
         //[Route("Excluir/id")]
+        [Authorize]
         public async Task<ActionResult<dynamic>> Excluir(string id)
         {
             var ID = Guid.Parse(id); ;

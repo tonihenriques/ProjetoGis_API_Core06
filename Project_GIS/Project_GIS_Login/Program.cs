@@ -48,12 +48,12 @@ builder.Services.AddAuthentication(x =>
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(key),
-            ValidateIssuer = true,
-            ValidateAudience = true,
+            ValidateIssuer = false,
+            ValidateAudience = false,
             ValidateLifetime = true,
 
-            ValidIssuer = "http://localhost:5130",
-            ValidAudience = "http://localhost:5130",
+            //ValidIssuer = "https://localhost:5130",
+            //ValidAudience = "https://localhost:5130",
 
 
         };
@@ -77,6 +77,8 @@ app.UseCors(x => x
            .AllowAnyHeader());
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

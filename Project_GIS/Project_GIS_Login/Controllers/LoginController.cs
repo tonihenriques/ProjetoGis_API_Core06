@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Project_GIS_Login.Business.Abstract;
+using Project_GIS_Login.Business.Concrect;
 using Project_GIS_Login.Context;
 using Project_GIS_Login.Entidade;
 using Project_GIS_Login.Repository.Abstract;
+using Project_GIS_Login.Services;
 using Project_GIS_Login.ViewModels;
 using static Project_GIS_Login.Services.ServiceToken;
 
@@ -16,11 +18,17 @@ namespace Project_GIS_Login.Controllers
         protected IBaseRepository<User> _baseRepository;
         protected LoginContext _loginContext;
         protected ILoginBusiness _loginBusiness;
-        public LoginController(IBaseRepository<User> baseRepository, LoginContext loginContext, ILoginBusiness loginBusiness)
+        protected IRolesBusiness _roleBusiness;
+        protected IUserRolesBusiness _userroleBusiness;
+
+        public LoginController(IBaseRepository<User> baseRepository, LoginContext loginContext, ILoginBusiness loginBusiness, 
+            IRolesBusiness roleBusiness, IUserRolesBusiness userroleBusiness)
         {
             _baseRepository = baseRepository;
             _loginContext = loginContext;
             _loginBusiness = loginBusiness;
+            _roleBusiness = roleBusiness;
+            _userroleBusiness = userroleBusiness;
         }
 
         [HttpPost]
@@ -30,44 +38,38 @@ namespace Project_GIS_Login.Controllers
 
             var user = new UserVM();
 
-            var users = from u in _loginContext.Users
-                        join c in _loginContext.UserRoless
-                        on u.id equals c.idUser
-                        join r in _loginContext.Roles
-                                    on c.idRole equals r.id
-                        where u.Username == userVm.Username && u.Password == userVm.Password
-                        select new UserVM()
-                        {
-                            Username = u.Username,
-                            Role = r.Name
+            var senha = Encrypt.CreateHashFromPassword(userVm.Password);
 
-                        };
-
-            if (users != null)
+            var user1 = _loginBusiness.Consulta.Where(p=>p.Username == userVm.Username && p.Password == senha).FirstOrDefault();
+          
+            if(user1 != null)
             {
-                foreach (var item in users)
+                var role1 = _userroleBusiness.Consulta.Where(p => p.idUser == user1.id).FirstOrDefault();
+
+                if(role1 != null)
                 {
-                    if (item != null)
-                    {
-                        user.Username = item.Username;
-                        user.Password = item.Password;
-                        user.Role = item.Role;
-                    }
+                    var role2 = _roleBusiness.Consulta.Where(p => p.id == role1.idRole).FirstOrDefault();
+
+                    user.Username = user1.Username;
+                    user.Password = user1.Password;
+                    user.Role = role2.Name;
+                    user.email = user1.email;
                 }
+
             }
 
-            //var user = UserRepository.Get(model.Username, model.Password);  
-
-
-
-
-            if (user == null)
+            if (user1 == null)
             {
-
-                return NotFound(new { message = "Usuario ou Senha inválidos!" });
+                return "Usuario ou Senha inválidos!";
             }
-            else
-            {
+            
+                TokenVM tokenVM = new TokenVM()
+                {
+                    token = GenerateToken(user),
+                    role = user.Role,
+                    email = user.email
+                };
+           
                 #region token01
                 //var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(settings.secret));
                 //var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -95,9 +97,9 @@ namespace Project_GIS_Login.Controllers
 
                 #endregion
 
-                var token = GenerateToken(user);
+                //var token = GenerateToken(user);
 
-                return Ok(new { Token = token });
+                return Ok(new { Token = tokenVM });
 
 
             }
@@ -113,5 +115,5 @@ namespace Project_GIS_Login.Controllers
         }
 
 
-    }
+    
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Project_GIS_Login.Business.Abstract;
@@ -28,6 +29,7 @@ namespace Project_GIS_Login.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IEnumerable<Role>> FindAll()
         {
 
@@ -42,8 +44,8 @@ namespace Project_GIS_Login.Controllers
 
         }
 
-        [HttpPost]
-       // [Route("Cadastro")]
+        [HttpPost]       
+        [Authorize]
         public async Task<ActionResult<dynamic>> Inserir([FromBody] RoleVM roleVM)
         {
             Role role = new Role()
@@ -76,6 +78,7 @@ namespace Project_GIS_Login.Controllers
 
         [HttpDelete("{id}")]
         //[Route("Excluir/id")]
+        [Authorize]
         public async Task<ActionResult<dynamic>> Excluir(string id)
         {
             var ID = Guid.Parse(id); ;
