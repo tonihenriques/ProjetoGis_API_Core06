@@ -57,53 +57,80 @@ namespace Project_GIS_Login.Controllers
             throw new NotImplementedException();
         }
 
-        [HttpPost]
-        [Authorize]
+        [HttpPost]      
         public async Task<ActionResult<User>> Inserir([FromBody] UserVM modelVm)
         {
-
-            var senha = Encrypt.CreateHashFromPassword(modelVm.Password);
-
-            if (ModelState.IsValid)
+            try
             {
-                User model = new User()
+
+                var senha = Encrypt.CreateHashFromPassword(modelVm.Password);
+
+                if (ModelState.IsValid)
                 {
-                    id = Guid.Empty,
-                    Username = modelVm.Username,
-                    Password =   senha,
-                    PhoneNumber = modelVm.PhoneNumber,
-                    email = modelVm.email
-
-                };
-
-                _userBusiness.Inserir(model);
-
-                Guid idRole = Guid.Parse(modelVm.RoleId);
-                Guid idUser = Guid.Empty;
-                               
-
-                IQueryable<User> lastIdUser = _userBusiness.Consulta.OrderByDescending(p => p.DataInclusao).Take(1);
-
-                if (lastIdUser != null)
-                {
-                    foreach (var item in lastIdUser)
+                    User model = new User()
                     {
-                        if (item != null)
+                        id = Guid.Empty,
+                        Username = modelVm.Username,
+                        Password = senha,
+                        PhoneNumber = modelVm.PhoneNumber,
+                        email = modelVm.email,
+                        Totalpessoas = modelVm.Totalpessoas,
+                        Menor10 = modelVm.Menor10,
+                        Maior60 = modelVm.Maior60,
+                        Feminino = modelVm.Feminino,
+                        Masculino = modelVm.Masculino,
+
+                    };
+
+                    _userBusiness.Inserir(model);
+
+                    Role role = _rolesBusiness.Consulta.FirstOrDefault(p => p.Name.Equals("customer"));
+
+                    Guid idRole = Guid.Empty;
+
+                    if (modelVm.RoleId == "")
+                    {
+                        idRole = role.id;
+                    }
+                    else
+                    {
+                        idRole = Guid.Parse(modelVm.RoleId);
+                    }
+
+
+                    Guid idUser = Guid.Empty;
+
+                    IQueryable<User> lastIdUser = _userBusiness.Consulta.OrderByDescending(p => p.DataInclusao).Take(1);
+
+                    if (lastIdUser != null)
+                    {
+                        foreach (var item in lastIdUser)
                         {
-                            idUser = item.id;
+                            if (item != null)
+                            {
+                                idUser = item.id;
+                            }
                         }
                     }
+
+
+                    var tInter = new UserRoles();
+                    tInter.idUser = idUser;
+                    tInter.idRole = idRole;
+
+                    _userRolesBusiness.Inserir(tInter);
+
+                    return Ok(model);
                 }
-                var tInter = new UserRoles();
-                tInter.idUser = idUser;
-                tInter.idRole = idRole;
 
-                _userRolesBusiness.Inserir(tInter);
+                return BadRequest("Cadastro não foi concluído!");
 
-                return Ok(model);
             }
+            catch (Exception)
+            {
 
-            return BadRequest("Cadastro não foi concluído!");
+                throw;
+            }
 
         }
 
@@ -113,34 +140,44 @@ namespace Project_GIS_Login.Controllers
         [Authorize]
         public async Task<ActionResult<dynamic>> Excluir(string id)
         {
-            var ID = Guid.Parse(id); ;
 
-            if (ModelState.IsValid)
+            try
             {
-                User user = _userBusiness.Consulta.Where(p => p.id == ID).FirstOrDefault();
 
-                UserRoles userRoles = _userRolesBusiness.Consulta.Where(p => p.idUser == user.id).FirstOrDefault();
+                var ID = Guid.Parse(id); ;
 
-                if (user == null)
+                if (ModelState.IsValid)
                 {
-                    error = "Registro user não encontrado!";
-                    return error;
+                    User user = _userBusiness.Consulta.Where(p => p.id == ID).FirstOrDefault();
+
+                    UserRoles userRoles = _userRolesBusiness.Consulta.Where(p => p.idUser == user.id).FirstOrDefault();
+
+                    if (user == null)
+                    {
+                        error = "Registro user não encontrado!";
+                        return error;
+                    }
+
+                    _userBusiness.Excluir(user);
+
+                    if (userRoles == null)
+                    {
+                        error = "Registro userRoles não encontrado!";
+                        return error;
+                    }
+
+                    _userRolesBusiness.Excluir(userRoles);
+
+                    return Ok(user);
                 }
 
-                _userBusiness.Excluir(user);
-
-                if (userRoles == null)
-                {
-                    error = "Registro userRoles não encontrado!";
-                    return error;
-                }
-
-                _userRolesBusiness.Excluir(userRoles);
-
-                return Ok(user);
+                return BadRequest("Exclusão não foi concluída!");
             }
+            catch (Exception)
+            {
 
-            return BadRequest("Exclusão não foi concluída!");
+                throw;
+            }
 
         }
 

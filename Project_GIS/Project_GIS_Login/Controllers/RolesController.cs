@@ -29,7 +29,7 @@ namespace Project_GIS_Login.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+    
         public async Task<IEnumerable<Role>> FindAll()
         {
 
