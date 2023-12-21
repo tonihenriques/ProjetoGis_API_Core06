@@ -1,8 +1,14 @@
 ﻿using Hunger_Map.Business.Abstract;
 using Hunger_Map.Entidade;
+using Hunger_Map.Utils;
 using Hunger_Map.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Net;
+using System.Runtime.Serialization.Json;
+using System.Text;
+using System.Text.Json;
 
 namespace Hunger_Map.Controllers
 {
@@ -11,11 +17,13 @@ namespace Hunger_Map.Controllers
     public class AddressController : ControllerBase
     {        
         
-        protected IAddressBusiness _addressBusiness;
-       
-        public AddressController(IAddressBusiness addressBusiness)
-        {           
-            _addressBusiness = addressBusiness;
+        protected IAddressBusiness _addressBusiness;       
+        private readonly HttpClient _client;
+
+        public AddressController(IAddressBusiness addressBusiness, HttpClient client)
+        {
+            _addressBusiness = addressBusiness;           
+            _client = client;
         }
 
         [HttpGet]
@@ -27,6 +35,98 @@ namespace Hunger_Map.Controllers
             return Ok(result);
 
         }
+
+        [HttpGet("UserAddress")]
+       // [Authorize]
+        public async Task<IEnumerable<dynamic>> GetUserAddress()
+        {
+            try
+            {
+                var response = await _client.GetAsync("https://localhost:5130/api/User");
+                var content = await response.Content.ReadAsStringAsync();
+
+                var userlist = JsonConvert.DeserializeObject<IEnumerable<UserVM>>(content);
+
+                var address = _addressBusiness.Consulta.ToList();
+
+                
+                List<AddressUserVM>  usersadVM = new List<AddressUserVM>();
+                List<AddressUserVM>  usersatempdVM = new List<AddressUserVM>();
+
+                foreach(var item in userlist)
+                {
+                    AddressUserVM useradVM = new AddressUserVM();
+                    if (item != null)
+                    {
+                        useradVM.TotalPessoas = item.Totalpessoas;
+                        useradVM.Menor10 = item.Menor10;
+                        useradVM.Maior60 = item.Maior60;    
+                        useradVM.Masculino = item.Masculino;
+                        useradVM.Feminino = item.Feminino;
+                        useradVM.email = item.email;                      
+                        usersadVM.Add(useradVM);
+                    }
+                }
+
+                foreach(var item in address)
+                {
+                    AddressUserVM useradVM = new AddressUserVM();
+                    if(item != null)
+                    {
+                        useradVM.rua = item.rua;
+                        useradVM.bairro = item.bairro;
+                        useradVM.cidade = item.cidade;
+                        useradVM.cep = item.cep;
+                        useradVM.pais = item.pais;
+                        useradVM.email = item.email;
+                        useradVM.lat = item.lat;
+                        useradVM.lng = item.lng;
+                        
+                        usersatempdVM.Add(useradVM);
+                    }
+
+                }
+
+                var sadVM = from u in usersadVM
+                            join a in usersatempdVM
+                            on u.email equals a.email
+                            where u.email.Equals(a.email)
+                            select new AddressUserVM()
+                            {
+                                rua = a.rua,
+                                numero = a.numero,
+                                bairro = a.bairro,
+                                cidade = a.cidade,
+                                estado = a.estado,
+                                pais = a.pais,
+                                cep = a.cep,
+                                lat = a.lat,
+                                lng = a.lng,
+                                email = a.email,
+                                username = u.username,
+                                PhoneNumber = u.PhoneNumber,
+                                TotalPessoas = u.TotalPessoas,
+                                Menor10 = u.Menor10,
+                                Maior60 = u.Maior60,
+                                Feminino = u.Feminino,
+                                Masculino = u.Masculino
+
+                            };
+
+
+                return sadVM;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+
+       
+
+      
 
         [HttpPost]
         [Authorize]

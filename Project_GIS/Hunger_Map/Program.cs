@@ -16,6 +16,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<HungerContext>(options =>
                            options.UseSqlServer(builder.Configuration.GetConnectionString("SQLConectionString")));
 
+builder.Services.AddHttpClient<IUserBusiness, UserBusiness>(s => s.BaseAddress =
+               new Uri(builder.Configuration["ServiceUrls:Gis_Login"]));
+
 builder.Services.AddScoped(typeof(IBaseBusiness<>), typeof(BaseBusiness<>));
 
 builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));

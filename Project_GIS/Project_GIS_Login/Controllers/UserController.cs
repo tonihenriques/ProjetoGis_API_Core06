@@ -29,28 +29,45 @@ namespace Project_GIS_Login.Controllers
         }
 
         [HttpGet]
-        [Authorize]
-        public async Task<IEnumerable<dynamic>> FindAll()
+       // [Authorize]
+        public async Task<IEnumerable<UserVM>> FindAll()
         {
-            try
-            {
-                var result = _userBusiness.Consulta.Where(p=>p.UsuarioExclusao == "nulo");
-                if (result != null)
-                {
-                    return result;
-                }
-
-                return (IEnumerable<dynamic>)BadRequest("Não item encotrado");
-
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
            
+                var result = _userBusiness.Consulta.Where(p => p.UsuarioExclusao == "nulo");                  
+                        
+                        if (result != null)
+                        {
+                            List<UserVM> usersVM = new List<UserVM>();
+                           
 
+                            foreach (var item in result)
+                            {
+                                UserVM userVM = new UserVM();
+                                if (item != null)
+                                {
+                                    userVM.Username = item.Username;
+                                    userVM.Password = "";
+                                    userVM.Role = "";
+                                    userVM.PhoneNumber = item.PhoneNumber;
+                                    userVM.RoleId = "";
+                                    userVM.email = item.email;
+                                    userVM.Totalpessoas = item.Totalpessoas;
+                                    userVM.Menor10 = item.Menor10;
+                                    userVM.Maior60 = item.Maior60;
+                                    userVM.Feminino = item.Feminino;
+                                    userVM.Masculino = item.Masculino;
+                                    usersVM.Add(userVM);
+
+                                }
+                            }
+                               
+                                return usersVM;
+                        }
+
+            return null;
         }
+              
+        
 
         private IEnumerable<dynamic> OK(IQueryable<User> result)
         {
