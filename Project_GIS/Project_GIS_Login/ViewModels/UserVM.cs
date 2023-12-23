@@ -13,5 +13,6 @@
         public string Maior60 { get; set; }
         public string Feminino { get; set; }
         public string Masculino { get; set; }
+       
     }
 }

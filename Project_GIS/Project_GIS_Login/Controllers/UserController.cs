@@ -47,7 +47,7 @@ namespace Project_GIS_Login.Controllers
                                 {
                                     userVM.Username = item.Username;
                                     userVM.Password = "";
-                                    userVM.Role = "";
+                                    userVM.Role = item.Role;
                                     userVM.PhoneNumber = item.PhoneNumber;
                                     userVM.RoleId = "";
                                     userVM.email = item.email;
@@ -89,6 +89,7 @@ namespace Project_GIS_Login.Controllers
                         id = Guid.Empty,
                         Username = modelVm.Username,
                         Password = senha,
+                        Role = modelVm.Role,
                         PhoneNumber = modelVm.PhoneNumber,
                         email = modelVm.email,
                         Totalpessoas = modelVm.Totalpessoas,
@@ -101,18 +102,7 @@ namespace Project_GIS_Login.Controllers
 
                     _userBusiness.Inserir(model);
 
-                    Role role = _rolesBusiness.Consulta.FirstOrDefault(p => p.Name.Equals("customer"));
-
-                    Guid idRole = Guid.Empty;
-
-                    if (modelVm.RoleId == "")
-                    {
-                        idRole = role.id;
-                    }
-                    else
-                    {
-                        idRole = Guid.Parse(modelVm.RoleId);
-                    }
+                    Role role = _rolesBusiness.Consulta.FirstOrDefault(p => p.Name.Equals(model.Role));                   
 
 
                     Guid idUser = Guid.Empty;
@@ -133,7 +123,7 @@ namespace Project_GIS_Login.Controllers
 
                     var tInter = new UserRoles();
                     tInter.idUser = idUser;
-                    tInter.idRole = idRole;
+                    tInter.idRole = role.id;
 
                     _userRolesBusiness.Inserir(tInter);
 

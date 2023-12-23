@@ -12,6 +12,7 @@
         public string lat { get; set; }
         public string lng { get; set; }
         public string email { get; set; }
+        public string role { get; set; }
         public string username { get; set; }
         public string PhoneNumber { get; set; }
         public string TotalPessoas { get; set; }

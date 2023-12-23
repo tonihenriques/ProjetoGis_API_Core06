@@ -6,6 +6,7 @@ namespace Hunger_Map.Entidade
     {
         public string Username { get; set; }
         public string Password { get; set; }
+        public string  role { get; set; }
         public string PhoneNumber { get; set; }
         public string email { get; set; }
         public string Totalpessoas { get; set; }
