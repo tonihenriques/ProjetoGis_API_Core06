@@ -17,7 +17,7 @@ namespace Project_GIS_Login.Controllers
         [Authorize]
         public string Authenticated()
         {
-            return $"Usuario Autenticado - {User.Identity.Name}";
+            return $"Usuario Autenticado -{ User.Identity.Name}";
         }
     }
 }

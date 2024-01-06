@@ -69,37 +69,39 @@ namespace Project_GIS_Login.Controllers
                     role = user.Role,
                     email = user.email
                 };
-           
-                #region token01
-                //var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(settings.secret));
-                //var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-                //var claims = new List<Claim>()
-                //{
-                //    new Claim(ClaimTypes.Name, user.Username),
-                //    new Claim(ClaimTypes.Role, "Manager")
+            #region token01
+            //var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(settings.secret));
+            //var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-                //};
+            //var claims = new List<Claim>()
+            //{
+            //    new Claim(ClaimTypes.Name, user.Username),
+            //    new Claim(ClaimTypes.Role, "Manager")
 
-                //var tokenOptions = new JwtSecurityToken(
-                //    issuer: "http://localhost:5130",
-                //    audience: "http://localhost:5130",
-                //    claims: claims,
-                //    expires: DateTime.Now.AddMinutes(5),
-                //    signingCredentials: signingCredentials
+            //};
 
-                //    );
+            //var tokenOptions = new JwtSecurityToken(
+            //    issuer: "http://localhost:5130",
+            //    audience: "http://localhost:5130",
+            //    claims: claims,
+            //    expires: DateTime.Now.AddMinutes(5),
+            //    signingCredentials: signingCredentials
+
+            //    );
 
 
-                //var tokenstring = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+            //var tokenstring = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
 
-                //return Ok(new { Token = tokenstring });
+            //return Ok(new { Token = tokenstring });
 
-                #endregion
+            #endregion
 
-                //var token = GenerateToken(user);
+            //var token = GenerateToken(user);
 
-                return Ok(new { Token = tokenVM });
+            var t =  $"Usuario Autenticado - {User.Identity.Name}";
+
+            return Ok(new { Token = tokenVM });
 
 
             }

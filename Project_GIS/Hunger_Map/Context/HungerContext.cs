@@ -11,5 +11,7 @@ namespace Hunger_Map.Context
 
 
         public DbSet<Address> Address { get; set; }
+        public DbSet<ListAlimentos> ListAlimentos { get; set; }
+        public DbSet<DoacaoAnjo> DoacaoAnjo { get; set; }
     }
 }

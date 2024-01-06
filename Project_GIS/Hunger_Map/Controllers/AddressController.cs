@@ -31,9 +31,7 @@ namespace Hunger_Map.Controllers
         public ActionResult<IEnumerable<Address>> Get()
         {
             var result = _addressBusiness.Consulta.ToList();
-
             return Ok(result);
-
         }
 
         [HttpGet("UserAddress")]
@@ -49,7 +47,7 @@ namespace Hunger_Map.Controllers
 
                 var address = _addressBusiness.Consulta.ToList();
 
-                
+              
                 List<AddressUserVM>  usersadVM = new List<AddressUserVM>();
                 List<AddressUserVM>  usersatempdVM = new List<AddressUserVM>();
 
@@ -91,7 +89,7 @@ namespace Hunger_Map.Controllers
                 }
 
                 var sadVM = from u in usersadVM
-                            join a in usersatempdVM
+                            join a in address
                             on u.email equals a.email
                             where u.email.Equals(a.email)
                             select new AddressUserVM()
@@ -128,6 +126,18 @@ namespace Hunger_Map.Controllers
             }
 
         }
+
+
+
+        private async Task<IEnumerable<UserVM>> GetUser()
+        {
+            var response = await _client.GetAsync("https://localhost:5130/api/User");           
+
+            return await response.ReadContentAs<List<UserVM>>();
+
+        }
+
+
 
         [HttpGet("UserAnjo/{email}")]
         // [Authorize]

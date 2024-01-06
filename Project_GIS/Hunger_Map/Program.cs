@@ -26,6 +26,10 @@ builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 builder.Services.AddScoped<IAddressBusiness, AddressBusiness>();
 
 
+builder.Services.AddScoped<IListAlimentosBusiness, ListAlimentosBusiness>();
+
+
+
 
 
 // Add services to the container.
